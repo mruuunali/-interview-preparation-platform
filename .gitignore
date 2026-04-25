@@ -1,0 +1,9 @@
+# .gitignore for Spring Boot — create this file in prepiq-backend/
+target/
+*.class
+*.jar
+.env
+application-prod.properties
+.idea/
+*.iml
+.DS_Store
