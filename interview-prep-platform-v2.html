@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrepIQ — Interview Practice Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#0e0f13; --bg2:#15161c; --bg3:#1c1d26; --card:#1e1f2a;
+    --border:rgba(255,255,255,0.08); --border-hover:rgba(255,255,255,0.16);
+    --text:#f0eff5; --text2:#8f8ea8; --text3:#5a596e;
+    --accent:#7c6fef; --accent2:#a599f5; --accent-bg:rgba(124,111,239,0.12); --accent-border:rgba(124,111,239,0.3);
+    --green:#34d399; --green-bg:rgba(52,211,153,0.1);
+    --red:#f87171; --red-bg:rgba(248,113,113,0.1);
+    --amber:#fbbf24; --amber-bg:rgba(251,191,36,0.1);
+    --radius:12px; --radius-sm:8px;
+    --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+  }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:15px; line-height:1.6; min-height:100vh; }
+  .screen { display:none; min-height:100vh; }
+  .screen.active { display:flex; flex-direction:column; }
+
+  /* NAV */
+  nav { display:flex; align-items:center; justify-content:space-between; padding:0 2rem; height:60px; border-bottom:1px solid var(--border); background:var(--bg); position:sticky; top:0; z-index:100; }
+  .nav-logo { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); letter-spacing:-0.5px; }
+  .nav-logo span { color:var(--accent2); }
+  .nav-user { display:flex; align-items:center; gap:10px; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:var(--accent-bg); border:1px solid var(--accent-border); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:var(--accent2); font-family:var(--font-head); }
+
+  /* BUTTONS */
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 22px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; cursor:pointer; border:none; font-family:var(--font-body); transition:all 0.18s; text-decoration:none; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  .btn-outline { background:transparent; color:var(--text); border:1px solid var(--border); }
+  .btn-outline:hover { border-color:var(--border-hover); background:var(--bg3); }
+  .btn-ghost { background:transparent; color:var(--text2); border:none; padding:8px 12px; cursor:pointer; font-family:var(--font-body); font-size:14px; }
+  .btn-ghost:hover { color:var(--text); }
+  .nav-btn { padding:7px 16px; border-radius:var(--radius-sm); font-size:13px; font-weight:500; cursor:pointer; border:none; font-family:var(--font-body); transition:all 0.18s; }
+  .nav-btn.ghost { background:transparent; color:var(--text2); border:1px solid var(--border); }
+  .nav-btn.ghost:hover { border-color:var(--border-hover); color:var(--text); }
+
+  /* CARDS */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
+
+  /* FORM */
+  input, textarea, select { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:14px; padding:10px 14px; width:100%; outline:none; transition:border-color 0.18s; }
+  input:focus, textarea:focus { border-color:var(--accent); }
+  textarea { resize:vertical; min-height:140px; line-height:1.6; }
+  label { font-size:13px; color:var(--text2); margin-bottom:6px; display:block; }
+
+  /* BADGES */
+  .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:500; }
+  .badge-purple { background:var(--accent-bg); color:var(--accent2); border:1px solid var(--accent-border); }
+  .badge-green  { background:var(--green-bg);  color:var(--green);   border:1px solid rgba(52,211,153,0.2); }
+  .badge-red    { background:var(--red-bg);    color:var(--red);     border:1px solid rgba(248,113,113,0.2); }
+  .badge-amber  { background:var(--amber-bg);  color:var(--amber);   border:1px solid rgba(251,191,36,0.2); }
+  .badge-gray   { background:rgba(255,255,255,0.06); color:var(--text2); border:1px solid var(--border); }
+
+  /* PROGRESS */
+  .progress-track { background:var(--bg3); border-radius:999px; height:6px; overflow:hidden; }
+  .progress-fill  { height:100%; border-radius:999px; background:var(--accent); transition:width 0.6s ease; }
+  .progress-fill.green { background:var(--green); }
+  .progress-fill.amber { background:var(--amber); }
+  .progress-fill.red   { background:var(--red); }
+
+  /* SCORE RING */
+  .score-ring { position:relative; width:80px; height:80px; flex-shrink:0; }
+  .score-ring svg { transform:rotate(-90deg); }
+  .score-ring .score-num { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); }
+  .score-ring .score-lbl { font-size:10px; color:var(--text2); font-family:var(--font-body); }
+
+  /* TOAST */
+  #toast { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+  .toast-item { padding:12px 18px; border-radius:var(--radius-sm); font-size:13px; font-weight:500; animation:slideIn 0.25s ease; max-width:320px; }
+  .toast-success { background:#1a3d2e; color:var(--green); border:1px solid rgba(52,211,153,0.3); }
+  .toast-error   { background:#3d1a1a; color:var(--red);   border:1px solid rgba(248,113,113,0.3); }
+  .toast-info    { background:#1a1f3d; color:var(--accent2); border:1px solid var(--accent-border); }
+  @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+
+  /* SPINNER */
+  .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* SKELETON */
+  .skeleton { background:linear-gradient(90deg, var(--bg3) 25%, var(--bg2) 50%, var(--bg3) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:var(--radius-sm); }
+  @keyframes shimmer { to { background-position:-200% 0; } }
+
+  /* UTILS */
+  .flex { display:flex; } .flex-col { display:flex; flex-direction:column; }
+  .items-center { align-items:center; } .justify-between { justify-content:space-between; }
+  .gap-2{gap:8px;} .gap-3{gap:12px;} .gap-4{gap:16px;} .gap-6{gap:24px;}
+  .mt-2{margin-top:8px;} .mt-3{margin-top:12px;} .mt-4{margin-top:16px;} .mt-6{margin-top:24px;}
+  .mb-2{margin-bottom:8px;} .mb-3{margin-bottom:12px;} .mb-4{margin-bottom:16px;}
+  .text-sm{font-size:13px;} .text-xs{font-size:12px;} .text-muted{color:var(--text2);} .text-hint{color:var(--text3);}
+  .text-accent{color:var(--accent2);} .text-green{color:var(--green);} .text-red{color:var(--red);} .text-amber{color:var(--amber);}
+  .font-head{font-family:var(--font-head);} .font-500{font-weight:500;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .w-full{width:100%;}
+
+  /* LOGIN */
+  #screen-login { align-items:center; justify-content:center; }
+  .login-box { width:100%; max-width:420px; padding:2.5rem; background:var(--card); border:1px solid var(--border); border-radius:16px; }
+  .login-logo { font-family:var(--font-head); font-size:26px; font-weight:700; margin-bottom:4px; }
+  .login-logo span { color:var(--accent2); }
+  .tab-row { display:flex; background:var(--bg3); border-radius:var(--radius-sm); padding:3px; margin:1.5rem 0; }
+  .tab-btn { flex:1; padding:8px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer; border:none; background:transparent; color:var(--text2); font-family:var(--font-body); transition:all 0.18s; }
+  .tab-btn.active { background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .form-group { margin-bottom:14px; }
+  .alert { border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; margin-bottom:14px; display:none; }
+  .alert-error { background:var(--red-bg); border:1px solid rgba(248,113,113,0.2); color:var(--red); }
+  .alert-success { background:var(--green-bg); border:1px solid rgba(52,211,153,0.2); color:var(--green); }
+  .divider-or { display:flex; align-items:center; gap:12px; margin:1.2rem 0; font-size:12px; color:var(--text3); }
+  .divider-or::before, .divider-or::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* DASHBOARD */
+  .main-content { flex:1; padding:2rem; max-width:1100px; width:100%; margin:0 auto; }
+  .stat-card { background:var(--bg3); border-radius:var(--radius); padding:1.25rem; border:1px solid var(--border); }
+  .stat-num { font-family:var(--font-head); font-size:28px; font-weight:700; line-height:1; margin-bottom:4px; }
+  .q-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; cursor:pointer; transition:all 0.18s; }
+  .q-card:hover { border-color:var(--accent-border); transform:translateY(-2px); }
+  .q-card-title { font-size:14px; font-weight:500; line-height:1.5; margin-bottom:10px; }
+  .filter-btn { padding:6px 14px; border-radius:999px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text2); font-family:var(--font-body); transition:all 0.18s; }
+  .filter-btn.active { background:var(--accent-bg); border-color:var(--accent-border); color:var(--accent2); }
+  .filter-btn:hover:not(.active) { border-color:var(--border-hover); color:var(--text); }
+
+  /* PRACTICE */
+  .practice-layout { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; flex:1; padding:2rem; max-width:1100px; width:100%; margin:0 auto; }
+  .q-text { font-size:17px; font-weight:500; line-height:1.6; font-family:var(--font-head); margin-bottom:1.25rem; }
+  .hint-box { background:var(--accent-bg); border:1px solid var(--accent-border); border-radius:var(--radius-sm); padding:12px 16px; font-size:13px; color:var(--accent2); margin-bottom:1rem; }
+  .timer-bar { display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; padding:12px 16px; background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); }
+  .timer-num { font-family:var(--font-head); font-size:22px; font-weight:700; color:var(--amber); min-width:52px; }
+  .sidebar-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; }
+  .sidebar-title { font-size:12px; font-weight:500; color:var(--text2); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; }
+  .char-count { font-size:12px; color:var(--text3); text-align:right; margin-top:6px; }
+
+  /* FEEDBACK */
+  .feedback-layout { display:grid; grid-template-columns:1fr 300px; gap:1.5rem; flex:1; padding:2rem; max-width:1100px; width:100%; margin:0 auto; }
+  .score-row-label { font-size:13px; color:var(--text2); min-width:140px; }
+  .answer-compare { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.25rem; }
+  .answer-box { background:var(--bg3); border-radius:var(--radius-sm); padding:1rem; font-size:13px; line-height:1.7; }
+  .answer-box-label { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.08em; color:var(--text3); margin-bottom:8px; }
+  .kw { padding:4px 10px; border-radius:999px; font-size:12px; font-weight:500; }
+  .kw-hit  { background:var(--green-bg); color:var(--green); border:1px solid rgba(52,211,153,0.2); }
+  .kw-miss { background:var(--red-bg);   color:var(--red);   border:1px solid rgba(248,113,113,0.2); }
+
+  /* API STATUS BAR */
+  .api-status { display:flex; align-items:center; gap:6px; font-size:11px; padding:4px 10px; border-radius:999px; }
+  .api-status.ok     { background:var(--green-bg);  color:var(--green);  border:1px solid rgba(52,211,153,0.2); }
+  .api-status.err    { background:var(--red-bg);    color:var(--red);    border:1px solid rgba(248,113,113,0.2); }
+  .api-status.checking { background:var(--amber-bg); color:var(--amber); border:1px solid rgba(251,191,36,0.2); }
+  .status-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+  .fade-up { animation:fadeUp 0.35s ease both; }
+
+  @media(max-width:768px) {
+    .practice-layout,.feedback-layout{grid-template-columns:1fr;}
+    .grid-4{grid-template-columns:repeat(2,1fr);}
+    .grid-3{grid-template-columns:repeat(2,1fr);}
+    .answer-compare{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<!-- ==================== SCREEN 1: LOGIN ==================== -->
+<div id="screen-login" class="screen active">
+  <div class="login-box fade-up">
+    <div class="login-logo">Prep<span>IQ</span></div>
+    <p class="text-sm text-muted mt-2">Sharpen your interview skills with AI feedback</p>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign in</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div id="login-alert" class="alert alert-error"></div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <button class="btn btn-primary w-full" id="login-btn" onclick="doLogin()" style="justify-content:center">
+        Sign in
+      </button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register-form" style="display:none">
+      <div id="register-alert" class="alert alert-error"></div>
+      <div id="register-success" class="alert alert-success"></div>
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="reg-name" placeholder="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="reg-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password <span class="text-hint">(min 6 characters)</span></label>
+        <input type="password" id="reg-pass" placeholder="Min 6 characters">
+      </div>
+      <button class="btn btn-primary w-full" id="register-btn" onclick="doRegister()" style="justify-content:center">
+        Create account
+      </button>
+    </div>
+
+    <div class="divider-or">API</div>
+    <div id="api-status-login" class="api-status checking" style="justify-content:center">
+      <div class="status-dot"></div> Checking backend...
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 2: DASHBOARD ==================== -->
+<div id="screen-dashboard" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-user">
+      <div id="api-status-nav" class="api-status ok"><div class="status-dot"></div> API connected</div>
+      <span class="text-sm text-muted" id="nav-username"></span>
+      <div class="avatar" id="nav-avatar">?</div>
+      <button class="nav-btn ghost" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="flex items-center justify-between mb-4 fade-up">
+      <div>
+        <div class="font-head font-500" style="font-size:22px">Good morning, <span id="dash-name">—</span></div>
+        <p class="text-sm text-muted mt-2">Ready for today's practice session?</p>
+      </div>
+      <button class="btn btn-primary" onclick="startRandomPractice()">Start practice session</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid-4 mb-4 fade-up" id="stats-grid">
+      <div class="stat-card skeleton" style="height:80px"></div>
+      <div class="stat-card skeleton" style="height:80px"></div>
+      <div class="stat-card skeleton" style="height:80px"></div>
+      <div class="stat-card skeleton" style="height:80px"></div>
+    </div>
+
+    <div class="grid-2 fade-up">
+      <!-- RECENT ATTEMPTS -->
+      <div class="card">
+        <div class="font-head font-500 mb-4">Recent attempts</div>
+        <div id="recent-attempts">
+          <div class="skeleton" style="height:52px;margin-bottom:8px;border-radius:8px"></div>
+          <div class="skeleton" style="height:52px;margin-bottom:8px;border-radius:8px"></div>
+          <div class="skeleton" style="height:52px;border-radius:8px"></div>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE BY TOPIC (static UI, calculated from attempts) -->
+      <div class="card">
+        <div class="font-head font-500 mb-4">Performance by topic</div>
+        <div id="topic-perf">
+          <div class="skeleton" style="height:28px;margin-bottom:10px;border-radius:6px"></div>
+          <div class="skeleton" style="height:28px;margin-bottom:10px;border-radius:6px"></div>
+          <div class="skeleton" style="height:28px;border-radius:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTION BANK -->
+    <div class="mt-6 fade-up">
+      <div class="flex items-center justify-between mb-4">
+        <div class="font-head font-500">Question bank</div>
+        <input type="text" id="q-search" placeholder="Search questions..." style="width:220px" oninput="filterQuestions()">
+      </div>
+      <div class="flex gap-2 flex-wrap mb-4" id="category-filters">
+        <button class="filter-btn active" onclick="setCategoryFilter(this,'')">All</button>
+        <button class="filter-btn" onclick="setCategoryFilter(this,'JAVA')">Java Core</button>
+        <button class="filter-btn" onclick="setCategoryFilter(this,'SPRING')">Spring Boot</button>
+        <button class="filter-btn" onclick="setCategoryFilter(this,'DSA')">DSA</button>
+        <button class="filter-btn" onclick="setCategoryFilter(this,'SYSTEM_DESIGN')">System Design</button>
+        <button class="filter-btn" onclick="setCategoryFilter(this,'HR')">HR</button>
+      </div>
+      <div id="q-grid" class="grid-3">
+        <div class="q-card skeleton" style="height:100px"></div>
+        <div class="q-card skeleton" style="height:100px"></div>
+        <div class="q-card skeleton" style="height:100px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 3: PRACTICE ==================== -->
+<div id="screen-practice" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-user">
+      <button class="nav-btn ghost" onclick="goScreen('dashboard')">← Dashboard</button>
+    </div>
+  </nav>
+
+  <div class="practice-layout">
+    <div class="flex-col gap-4">
+      <!-- TIMER -->
+      <div class="timer-bar">
+        <div>
+          <div class="text-xs text-muted mb-2">Time elapsed</div>
+          <div class="timer-num" id="timer-display">00:00</div>
+        </div>
+        <div style="flex:1">
+          <div class="progress-track"><div class="progress-fill amber" id="timer-fill" style="width:0%"></div></div>
+        </div>
+        <span class="badge badge-amber">5:00 limit</span>
+      </div>
+
+      <!-- QUESTION CARD -->
+      <div class="card" style="flex:1">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="badge badge-purple" id="prac-category">—</span>
+          <span class="badge" id="prac-difficulty">—</span>
+          <span class="text-xs text-muted" style="margin-left:auto" id="prac-counter">Question —</span>
+        </div>
+
+        <div class="q-text" id="prac-question">Loading question...</div>
+
+        <button class="btn-ghost text-sm" style="padding:6px 0;margin-bottom:12px;display:flex;align-items:center;gap:6px" onclick="toggleHint()" id="hint-toggle-btn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Show hint
+        </button>
+        <div id="hint-box" class="hint-box" style="display:none">Loading hint...</div>
+
+        <label>Your answer</label>
+        <textarea id="answer-input" placeholder="Be specific — mention class names, annotations, and examples where possible..." oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="char-count">0</span> / 1500</div>
+
+        <div class="flex gap-3 mt-4">
+          <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">Submit for AI feedback</button>
+          <button class="btn btn-outline" onclick="goScreen('dashboard')">Exit session</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Answer tips</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="text-sm text-muted" style="padding:7px 0;border-bottom:1px solid var(--border);line-height:1.5"><strong style="color:var(--text)">Structure first.</strong> One-line definition, then expand.</div>
+          <div class="text-sm text-muted" style="padding:7px 0;border-bottom:1px solid var(--border);line-height:1.5"><strong style="color:var(--text)">Use exact terms.</strong> Mention class names and annotations.</div>
+          <div class="text-sm text-muted" style="padding:7px 0;border-bottom:1px solid var(--border);line-height:1.5"><strong style="color:var(--text)">Give an example.</strong> Even one line of pseudo-code helps.</div>
+          <div class="text-sm text-muted" style="padding:7px 0;line-height:1.5"><strong style="color:var(--text)">Aim for 80–350 words.</strong> Too short = low score.</div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Scoring weights</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div class="flex justify-between text-sm mb-2"><span>Keyword match</span><span class="text-accent">40%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:40%;background:var(--accent2)"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-2"><span>Technical depth</span><span class="text-amber">25%</span></div>
+            <div class="progress-track"><div class="progress-fill amber" style="width:25%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-2"><span>Answer length</span><span class="text-green">20%</span></div>
+            <div class="progress-track"><div class="progress-fill green" style="width:20%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-2"><span>Confidence tone</span><span class="text-muted">15%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:15%;background:var(--text3)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 4: FEEDBACK ==================== -->
+<div id="screen-feedback" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-user">
+      <button class="nav-btn ghost" onclick="nextQuestion()">Next question →</button>
+      <button class="nav-btn ghost" onclick="goScreen('dashboard')">Dashboard</button>
+    </div>
+  </nav>
+
+  <div class="feedback-layout">
+    <div>
+      <!-- SCORE HEADER -->
+      <div class="card flex gap-4 items-center mb-4 fade-up">
+        <div class="score-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#7c6fef" stroke-width="8"
+              stroke-dasharray="201" stroke-dashoffset="201" stroke-linecap="round" id="score-circle"
+              style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="score-num"><span id="fb-score">—</span><div class="score-lbl">/100</div></div>
+        </div>
+        <div style="flex:1">
+          <div class="font-head font-500" style="font-size:18px" id="fb-headline">—</div>
+          <p class="text-sm text-muted mt-2" id="fb-summary">—</p>
+          <div class="flex gap-2 mt-3 flex-wrap" id="fb-tags"></div>
+        </div>
+      </div>
+
+      <!-- SCORE BREAKDOWN -->
+      <div class="card mb-4 fade-up">
+        <div class="font-head font-500 mb-4">Score breakdown</div>
+        <div style="display:flex;flex-direction:column;gap:14px" id="score-breakdown">
+          <div class="skeleton" style="height:22px;border-radius:6px"></div>
+          <div class="skeleton" style="height:22px;border-radius:6px"></div>
+          <div class="skeleton" style="height:22px;border-radius:6px"></div>
+          <div class="skeleton" style="height:22px;border-radius:6px"></div>
+        </div>
+      </div>
+
+      <!-- KEYWORD ANALYSIS -->
+      <div class="card mb-4 fade-up">
+        <div class="font-head font-500 mb-2">Keyword analysis</div>
+        <p class="text-sm text-muted mb-3">Keywords your answer included vs. what was expected:</p>
+        <div id="keyword-grid" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- ANSWER COMPARISON -->
+      <div class="card fade-up">
+        <div class="font-head font-500 mb-2">Answer comparison</div>
+        <div class="answer-compare">
+          <div class="answer-box">
+            <div class="answer-box-label">Your answer</div>
+            <span id="fb-user-answer" class="text-sm text-muted">—</span>
+          </div>
+          <div class="answer-box" style="border:1px solid rgba(52,211,153,0.15)">
+            <div class="answer-box-label" style="color:var(--green)">Model answer</div>
+            <span id="fb-model-answer" class="text-sm text-muted">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Suggestions</div>
+        <div id="fb-suggestions" style="display:flex;flex-direction:column;gap:10px">
+          <div class="skeleton" style="height:60px;border-radius:8px"></div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" style="justify-content:center" onclick="nextQuestion()">Next question →</button>
+        <button class="btn btn-outline" style="justify-content:center" onclick="retryQuestion()">Retry this question</button>
+        <button class="btn-ghost text-sm" style="text-align:center" onclick="goScreen('dashboard')">Back to dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  CONFIG  —  change BASE_URL if your backend runs elsewhere
+// ═══════════════════════════════════════════════════════════
+const BASE_URL = 'http://localhost:8080/api';
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let token         = localStorage.getItem('prepiq_token') || null;
+let currentUser   = JSON.parse(localStorage.getItem('prepiq_user') || 'null');
+let allQuestions  = [];
+let filteredQs    = [];
+let activeCategory = '';
+let currentQuestion = null;
+let lastAnswer    = '';
+let timerInterval = null;
+let timerSeconds  = 0;
+let hintVisible   = false;
+const diffBadge   = { EASY:'badge-green', MEDIUM:'badge-amber', HARD:'badge-red' };
+
+// ═══════════════════════════════════════════════════════════
+//  API HELPER
+// ═══════════════════════════════════════════════════════════
+async function api(method, path, body = null, auth = true) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth && token) headers['Authorization'] = `Bearer ${token}`;
+
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+
+  const res = await fetch(BASE_URL + path, options);
+
+  // 401 = token expired — force logout
+  if (res.status === 401) { doLogout(); throw new Error('Session expired. Please sign in again.'); }
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const msg = data.message || data.error || Object.values(data)[0] || 'Something went wrong';
+    throw new Error(msg);
+  }
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast-item toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOADING STATES
+// ═══════════════════════════════════════════════════════════
+function setLoading(btnId, loading, text = '') {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? `<div class="spinner"></div> ${text || 'Loading...'}`
+    : (btn.dataset.original || text);
+  if (!loading && text) btn.dataset.original = text;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BACKEND HEALTH CHECK
+// ═══════════════════════════════════════════════════════════
+async function checkBackend() {
+  const loginStatus = document.getElementById('api-status-login');
+  try {
+    await fetch(BASE_URL.replace('/api','') + '/actuator/health').catch(() => {
+      // Try a lighter probe — if register endpoint responds (even with 400) backend is up
+    });
+    // Probe: try to hit a known endpoint
+    const probe = await fetch(BASE_URL + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'probe@probe.com', password: 'probe' })
+    });
+    // Any response (even 400/401) means backend is running
+    loginStatus.className = 'api-status ok';
+    loginStatus.innerHTML = '<div class="status-dot"></div> Backend connected';
+  } catch {
+    loginStatus.className = 'api-status err';
+    loginStatus.innerHTML = '<div class="status-dot"></div> Backend offline — start Spring Boot first';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function goScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name !== 'practice') stopTimer();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH — LOGIN
+// ═══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'))
+  );
+  document.getElementById('login-form').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value.trim();
+  const alert = document.getElementById('login-alert');
+  alert.style.display = 'none';
+
+  if (!email || !pass) { alert.textContent = 'Please enter email and password.'; alert.style.display = 'block'; return; }
+
+  setLoading('login-btn', true, 'Signing in...');
+  try {
+    const data = await api('POST', '/auth/login', { email, password: pass }, false);
+    token = data.token;
+    currentUser = { name: data.name, email: data.email, role: data.role };
+    localStorage.setItem('prepiq_token', token);
+    localStorage.setItem('prepiq_user', JSON.stringify(currentUser));
+    showToast(`Welcome back, ${data.name}!`, 'success');
+    loadDashboard();
+  } catch (err) {
+    alert.textContent = err.message;
+    alert.style.display = 'block';
+  } finally {
+    setLoading('login-btn', false, 'Sign in');
+    document.getElementById('login-btn').innerHTML = 'Sign in';
+    document.getElementById('login-btn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH — REGISTER
+// ═══════════════════════════════════════════════════════════
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value.trim();
+  const errEl = document.getElementById('register-alert');
+  const sucEl = document.getElementById('register-success');
+  errEl.style.display = 'none';
+  sucEl.style.display = 'none';
+
+  if (!name || !email || !pass) { errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; return; }
+  if (pass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+
+  setLoading('register-btn', true, 'Creating account...');
+  try {
+    const data = await api('POST', '/auth/register', { name, email, password: pass }, false);
+    token = data.token;
+    currentUser = { name: data.name, email: data.email, role: data.role };
+    localStorage.setItem('prepiq_token', token);
+    localStorage.setItem('prepiq_user', JSON.stringify(currentUser));
+    showToast(`Account created! Welcome, ${data.name}!`, 'success');
+    loadDashboard();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  } finally {
+    document.getElementById('register-btn').innerHTML = 'Create account';
+    document.getElementById('register-btn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH — LOGOUT
+// ═══════════════════════════════════════════════════════════
+function doLogout() {
+  token = null; currentUser = null;
+  localStorage.removeItem('prepiq_token');
+  localStorage.removeItem('prepiq_user');
+  stopTimer();
+  goScreen('login');
+  checkBackend();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function loadDashboard() {
+  goScreen('dashboard');
+
+  // Set user info in nav
+  document.getElementById('dash-name').textContent = currentUser?.name?.split(' ')[0] || '';
+  document.getElementById('nav-username').textContent = currentUser?.name || '';
+  const initials = (currentUser?.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('nav-avatar').textContent = initials;
+
+  // Load in parallel
+  await Promise.all([ loadStats(), loadQuestions() ]);
+}
+
+async function loadStats() {
+  try {
+    const dash = await api('GET', '/dashboard/stats');
+    renderStats(dash);
+    renderRecentAttempts(dash.recentAttempts || []);
+    renderTopicPerf(dash.recentAttempts || []);
+  } catch (err) {
+    showToast('Could not load stats: ' + err.message, 'error');
+    renderStats({ totalAttempts: 0, averageScore: 0 });
+    renderRecentAttempts([]);
+    renderTopicPerf([]);
+  }
+}
+
+function renderStats(dash) {
+  const avg = dash.averageScore ? Math.round(dash.averageScore) : 0;
+  const avgColor = avg >= 75 ? 'var(--green)' : avg >= 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent2)">${dash.totalAttempts || 0}</div>
+      <div class="text-xs text-muted">Questions attempted</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:${avgColor}">${avg}%</div>
+      <div class="text-xs text-muted">Average score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--amber)">${calculateStreak(dash.recentAttempts)}</div>
+      <div class="text-xs text-muted">Day streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--text)">${allQuestions.length || '—'}</div>
+      <div class="text-xs text-muted">Questions available</div>
+    </div>`;
+}
+
+function calculateStreak(attempts) {
+  if (!attempts || attempts.length === 0) return 0;
+  // Simple streak — count consecutive days from today
+  const today = new Date().toDateString();
+  const days = new Set(attempts.map(a => new Date(a.attemptedAt).toDateString()));
+  return days.has(today) ? Math.min(days.size, 7) : 0;
+}
+
+function renderRecentAttempts(attempts) {
+  const el = document.getElementById('recent-attempts');
+  if (!attempts.length) {
+    el.innerHTML = `<p class="text-sm text-muted" style="text-align:center;padding:1.5rem 0">No attempts yet — start practising!</p>`;
+    return;
+  }
+  el.innerHTML = attempts.slice(0, 5).map(a => {
+    const score = a.score || 0;
+    const cls   = score >= 75 ? 'badge-green' : score >= 50 ? 'badge-amber' : 'badge-red';
+    const date  = new Date(a.attemptedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+    return `
+      <div class="flex items-center justify-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div class="text-sm font-500">${truncate(a.questionText, 45)}</div>
+          <div class="text-xs text-muted mt-2">${a.category} · ${date}</div>
+        </div>
+        <span class="badge ${cls}" style="margin-left:12px;flex-shrink:0">${score}</span>
+      </div>`;
+  }).join('') + (attempts.length === 0 ? '' : '');
+}
+
+function renderTopicPerf(attempts) {
+  const el = document.getElementById('topic-perf');
+  if (!attempts.length) {
+    el.innerHTML = `<p class="text-sm text-muted" style="text-align:center;padding:1rem 0">Complete some questions to see performance by topic.</p>`;
+    return;
+  }
+  const byCategory = {};
+  attempts.forEach(a => {
+    if (!byCategory[a.category]) byCategory[a.category] = [];
+    byCategory[a.category].push(a.score || 0);
+  });
+  el.innerHTML = Object.entries(byCategory).map(([cat, scores]) => {
+    const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    const cls = avg >= 75 ? 'green' : avg >= 50 ? 'amber' : 'red';
+    const col = avg >= 75 ? 'var(--green)' : avg >= 50 ? 'var(--amber)' : 'var(--red)';
+    return `
+      <div style="margin-bottom:12px">
+        <div class="flex justify-between text-sm mb-2">
+          <span>${cat}</span>
+          <span style="color:${col};font-weight:500">${avg}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill ${cls}" style="width:${avg}%"></div></div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  QUESTION BANK
+// ═══════════════════════════════════════════════════════════
+async function loadQuestions() {
+  try {
+    allQuestions = await api('GET', '/questions');
+    filteredQs = [...allQuestions];
+    renderQuestions(filteredQs);
+  } catch (err) {
+    showToast('Could not load questions: ' + err.message, 'error');
+    document.getElementById('q-grid').innerHTML =
+      `<p class="text-sm text-muted" style="grid-column:1/-1;text-align:center;padding:2rem">Failed to load questions. Is the backend running?</p>`;
+  }
+}
+
+function setCategoryFilter(btn, category) {
+  activeCategory = category;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterQuestions();
+}
+
+function filterQuestions() {
+  const search = document.getElementById('q-search').value.toLowerCase();
+  filteredQs = allQuestions.filter(q => {
+    const matchCat  = !activeCategory || q.category === activeCategory;
+    const matchText = !search || q.questionText.toLowerCase().includes(search);
+    return matchCat && matchText;
+  });
+  renderQuestions(filteredQs);
+}
+
+function renderQuestions(questions) {
+  const grid = document.getElementById('q-grid');
+  if (!questions.length) {
+    grid.innerHTML = `<p class="text-sm text-muted" style="grid-column:1/-1;text-align:center;padding:2rem">No questions found.</p>`;
+    return;
+  }
+  grid.innerHTML = questions.map(q => `
+    <div class="q-card" onclick="openQuestion(${q.id})">
+      <div class="q-card-title">${q.questionText}</div>
+      <div class="flex items-center justify-between">
+        <div class="flex gap-2">
+          <span class="badge badge-purple">${q.category}</span>
+          <span class="badge ${diffBadge[q.difficulty] || 'badge-gray'}">${q.difficulty}</span>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="color:var(--text3);flex-shrink:0">
+          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRACTICE
+// ═══════════════════════════════════════════════════════════
+function openQuestion(id) {
+  currentQuestion = allQuestions.find(q => q.id === id);
+  if (!currentQuestion) return;
+  document.getElementById('prac-question').textContent    = currentQuestion.questionText;
+  document.getElementById('prac-category').textContent    = currentQuestion.category;
+  document.getElementById('prac-difficulty').textContent  = currentQuestion.difficulty;
+  document.getElementById('prac-difficulty').className    = 'badge ' + (diffBadge[currentQuestion.difficulty] || 'badge-gray');
+  document.getElementById('prac-counter').textContent     = `${currentQuestion.category} · Q${currentQuestion.id}`;
+  document.getElementById('answer-input').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.getElementById('hint-box').style.display = 'none';
+  document.getElementById('hint-toggle-btn').innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Show hint`;
+  document.getElementById('hint-box').textContent = currentQuestion.keywords
+    ? `Think about: ${currentQuestion.keywords.split(',').slice(0,3).join(', ')}...`
+    : 'No hints available for this question.';
+  hintVisible = false;
+  timerSeconds = 0;
+  goScreen('practice');
+  startTimer();
+}
+
+function startRandomPractice() {
+  if (!allQuestions.length) { showToast('Questions not loaded yet', 'error'); return; }
+  const q = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+  openQuestion(q.id);
+}
+
+function toggleHint() {
+  hintVisible = !hintVisible;
+  document.getElementById('hint-box').style.display = hintVisible ? 'block' : 'none';
+  document.getElementById('hint-toggle-btn').innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    ${hintVisible ? 'Hide hint' : 'Show hint'}`;
+}
+
+function updateCharCount() {
+  const len = document.getElementById('answer-input').value.length;
+  const el  = document.getElementById('char-count');
+  el.textContent = len;
+  el.style.color = len > 1200 ? 'var(--amber)' : 'var(--text3)';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════════════
+function startTimer() {
+  stopTimer();
+  timerSeconds = 0;
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+    const s = String(timerSeconds % 60).padStart(2, '0');
+    document.getElementById('timer-display').textContent = `${m}:${s}`;
+    const pct = Math.min((timerSeconds / 300) * 100, 100);
+    const fill = document.getElementById('timer-fill');
+    fill.style.width = pct + '%';
+    fill.style.background = pct > 80 ? 'var(--red)' : 'var(--amber)';
+    if (timerSeconds === 300) showToast("5 minutes reached — wrap up your answer!", 'info');
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SUBMIT ANSWER  →  POST /api/attempts
+// ═══════════════════════════════════════════════════════════
+async function submitAnswer() {
+  const answer = document.getElementById('answer-input').value.trim();
+  if (answer.length < 20) { showToast('Write at least a few sentences before submitting.', 'error'); return; }
+
+  lastAnswer = answer;
+  stopTimer();
+  setLoading('submit-btn', true, 'Analysing with AI...');
+
+  try {
+    const feedback = await api('POST', '/attempts', {
+      questionId: currentQuestion.id,
+      answer
+    });
+    renderFeedback(feedback, answer);
+    goScreen('feedback');
+    showToast('Feedback ready!', 'success');
+  } catch (err) {
+    showToast('Failed to submit: ' + err.message, 'error');
+    startTimer(); // resume timer so user can try again
+  } finally {
+    document.getElementById('submit-btn').innerHTML = 'Submit for AI feedback';
+    document.getElementById('submit-btn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER FEEDBACK
+// ═══════════════════════════════════════════════════════════
+function renderFeedback(fb, userAnswer) {
+  const score = fb.overallScore || 0;
+
+  // Score ring animation
+  const circumference = 201;
+  const offset = circumference - (score / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('score-circle').style.strokeDashoffset = offset;
+    const ringColor = score >= 75 ? '#34d399' : score >= 50 ? '#fbbf24' : '#f87171';
+    document.getElementById('score-circle').style.stroke = ringColor;
+  }, 200);
+  document.getElementById('fb-score').textContent = score;
+
+  // Headline + summary
+  const [headline, summary] = getScoreVerdict(score);
+  document.getElementById('fb-headline').textContent = headline;
+  document.getElementById('fb-summary').textContent  = summary;
+
+  // Tags
+  const tags = [];
+  if (fb.keywordScore >= 70)   tags.push(['badge-green',  'Good keywords']);
+  else                         tags.push(['badge-red',    'Missing keywords']);
+  if (fb.sentimentScore >= 70) tags.push(['badge-green',  'Confident tone']);
+  else                         tags.push(['badge-amber',  'Uncertain tone']);
+  if (fb.lengthScore >= 70)    tags.push(['badge-green',  'Good length']);
+  else                         tags.push(['badge-amber',  'Needs more detail']);
+  document.getElementById('fb-tags').innerHTML = tags.map(([cls, lbl]) =>
+    `<span class="badge ${cls}">${lbl}</span>`).join('');
+
+  // Score breakdown
+  const scores = [
+    ['Keyword coverage', fb.keywordScore],
+    ['Confidence tone',  fb.sentimentScore],
+    ['Answer length',    fb.lengthScore],
+    ['Technical depth',  fb.technicalScore]
+  ];
+  document.getElementById('score-breakdown').innerHTML = scores.map(([label, val]) => {
+    const v   = val || 0;
+    const cls = v >= 75 ? 'green' : v >= 50 ? 'amber' : 'red';
+    const col = v >= 75 ? 'var(--green)' : v >= 50 ? 'var(--amber)' : 'var(--red)';
+    return `
+      <div class="flex items-center gap-3">
+        <span class="score-row-label">${label}</span>
+        <div class="progress-track" style="flex:1"><div class="progress-fill ${cls}" style="width:${v}%"></div></div>
+        <span class="text-sm font-500" style="color:${col};min-width:32px;text-align:right">${v}</span>
+      </div>`;
+  }).join('');
+
+  // Keywords
+  const missing = fb.missingKeywords || [];
+  const expectedKws = currentQuestion?.keywords?.split(',').map(k => k.trim()).filter(Boolean) || [];
+  const hits = expectedKws.filter(kw => !missing.includes(kw));
+  const kwHtml = [
+    ...hits.map(kw => `<span class="kw kw-hit">${kw}</span>`),
+    ...missing.map(kw => `<span class="kw kw-miss">${kw}</span>`)
+  ].join('');
+  document.getElementById('keyword-grid').innerHTML = kwHtml ||
+    `<p class="text-sm text-muted">No keyword data available.</p>`;
+
+  // Answers comparison
+  document.getElementById('fb-user-answer').textContent  = truncate(userAnswer, 300);
+  document.getElementById('fb-model-answer').textContent = fb.modelAnswer || 'Model answer not available for this question.';
+
+  // Suggestions
+  const suggestionList = (fb.suggestions || '').split('|').map(s => s.trim()).filter(Boolean);
+  document.getElementById('fb-suggestions').innerHTML = suggestionList.length
+    ? suggestionList.map(s => `
+        <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm)">
+          <div class="text-xs text-amber mb-2">💡 Suggestion</div>
+          <div class="text-sm">${s}</div>
+        </div>`).join('')
+    : `<div style="padding:10px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green)">
+        Great answer — keep it up!
+       </div>`;
+}
+
+function getScoreVerdict(score) {
+  if (score >= 85) return ['Excellent answer!', 'You covered everything an interviewer would want to hear.'];
+  if (score >= 70) return ['Good attempt!', 'You got the main points but missed some key technical details.'];
+  if (score >= 50) return ['Decent effort.', 'The answer is on the right track but needs more technical depth and keywords.'];
+  return ['Needs improvement.', 'Review the model answer and focus on the missing keywords below.'];
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION HELPERS
+// ═══════════════════════════════════════════════════════════
+function nextQuestion() {
+  if (!allQuestions.length) { goScreen('dashboard'); return; }
+  const idx  = allQuestions.findIndex(q => q.id === currentQuestion?.id);
+  const next = allQuestions[(idx + 1) % allQuestions.length];
+  openQuestion(next.id);
+}
+
+function retryQuestion() {
+  document.getElementById('answer-input').value = '';
+  document.getElementById('char-count').textContent = '0';
+  timerSeconds = 0;
+  goScreen('practice');
+  startTimer();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function truncate(str, n) { return str && str.length > n ? str.slice(0, n) + '...' : str; }
+
+// ═══════════════════════════════════════════════════════════
+//  INIT — check if user is already logged in
+// ═══════════════════════════════════════════════════════════
+(function init() {
+  checkBackend();
+  if (token && currentUser) {
+    loadDashboard();
+  }
+})();
+</script>
+</body>
+</html>

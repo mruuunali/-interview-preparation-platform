@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrepIQ — Interview Practice Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0f13;
+    --bg2: #15161c;
+    --bg3: #1c1d26;
+    --card: #1e1f2a;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.16);
+    --text: #f0eff5;
+    --text2: #8f8ea8;
+    --text3: #5a596e;
+    --accent: #7c6fef;
+    --accent2: #a599f5;
+    --accent-bg: rgba(124,111,239,0.12);
+    --accent-border: rgba(124,111,239,0.3);
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .nav-logo { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--accent2); }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-btn {
+    padding: 7px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; font-family: var(--font-body); transition: all 0.18s;
+  }
+  .nav-btn.ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .nav-btn.ghost:hover { border-color: var(--border-hover); color: var(--text); }
+  .nav-btn.primary { background: var(--accent); color: #fff; }
+  .nav-btn.primary:hover { background: var(--accent2); }
+  .nav-user { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-bg); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--accent2); font-family: var(--font-head); }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+    cursor: pointer; border: none; font-family: var(--font-body); transition: all 0.18s; text-decoration: none;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--border-hover); background: var(--bg3); }
+  .btn-ghost { background: transparent; color: var(--text2); border: none; padding: 8px 12px; }
+  .btn-ghost:hover { color: var(--text); }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
+  .btn-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+  .btn-green:hover { background: rgba(52,211,153,0.18); }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem;
+  }
+  .card:hover { border-color: var(--border-hover); }
+
+  /* FORM ELEMENTS */
+  input, textarea, select {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 10px 14px;
+    width: 100%; outline: none; transition: border-color 0.18s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+  label { font-size: 13px; color: var(--text2); margin-bottom: 6px; display: block; }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500;
+  }
+  .badge-purple { background: var(--accent-bg); color: var(--accent2); border: 1px solid var(--accent-border); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+  .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+  .badge-gray { background: rgba(255,255,255,0.06); color: var(--text2); border: 1px solid var(--border); }
+
+  /* PROGRESS BAR */
+  .progress-track { background: var(--bg3); border-radius: 999px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease; }
+  .progress-fill.green { background: var(--green); }
+  .progress-fill.amber { background: var(--amber); }
+  .progress-fill.red { background: var(--red); }
+
+  /* SCORE RING */
+  .score-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .score-num {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 20px; font-weight: 700; color: var(--text);
+  }
+  .score-ring .score-lbl { font-size: 10px; color: var(--text2); font-family: var(--font-body); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* UTIL */
+  .flex { display: flex; }
+  .flex-col { display: flex; flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-2 { gap: 8px; }
+  .gap-3 { gap: 12px; }
+  .gap-4 { gap: 16px; }
+  .gap-6 { gap: 24px; }
+  .mt-1 { margin-top: 4px; }
+  .mt-2 { margin-top: 8px; }
+  .mt-3 { margin-top: 12px; }
+  .mt-4 { margin-top: 16px; }
+  .mt-6 { margin-top: 24px; }
+  .mb-2 { margin-bottom: 8px; }
+  .mb-4 { margin-bottom: 16px; }
+  .text-sm { font-size: 13px; }
+  .text-xs { font-size: 12px; }
+  .text-muted { color: var(--text2); }
+  .text-hint { color: var(--text3); }
+  .text-accent { color: var(--accent2); }
+  .text-green { color: var(--green); }
+  .text-red { color: var(--red); }
+  .text-amber { color: var(--amber); }
+  .font-head { font-family: var(--font-head); }
+  .font-500 { font-weight: 500; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* =====================
+     SCREEN 1: LOGIN
+  ===================== */
+  #screen-login {
+    align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  .login-box {
+    width: 100%; max-width: 420px;
+    padding: 2.5rem; background: var(--card);
+    border: 1px solid var(--border); border-radius: 16px;
+  }
+  .login-logo { font-family: var(--font-head); font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .login-logo span { color: var(--accent2); }
+  .tab-row { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 3px; margin: 1.5rem 0; }
+  .tab-btn {
+    flex: 1; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; background: transparent; color: var(--text2);
+    font-family: var(--font-body); transition: all 0.18s;
+  }
+  .tab-btn.active { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .form-group { margin-bottom: 14px; }
+  .error-msg { background: var(--red-bg); border: 1px solid rgba(248,113,113,0.2); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--red); margin-bottom: 14px; display: none; }
+  .divider-or { display: flex; align-items: center; gap: 12px; margin: 1.2rem 0; font-size: 12px; color: var(--text3); }
+  .divider-or::before, .divider-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* =====================
+     SCREEN 2: DASHBOARD
+  ===================== */
+  .main-content { flex: 1; padding: 2rem; max-width: 1100px; width: 100%; margin: 0 auto; }
+  .page-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .stat-card { background: var(--bg3); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); }
+  .stat-num { font-family: var(--font-head); font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--text2); }
+  .q-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.25rem; cursor: pointer; transition: all 0.18s;
+  }
+  .q-card:hover { border-color: var(--accent-border); background: #22233080; transform: translateY(-2px); }
+  .q-card-title { font-size: 14px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+  .category-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text2);
+    font-family: var(--font-body); transition: all 0.18s;
+  }
+  .filter-btn.active { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent2); }
+  .filter-btn:hover:not(.active) { border-color: var(--border-hover); color: var(--text); }
+  .streak-badge { background: var(--amber-bg); border: 1px solid rgba(251,191,36,0.2); border-radius: var(--radius-sm); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+
+  /* =====================
+     SCREEN 3: PRACTICE
+  ===================== */
+  .practice-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; flex: 1; padding: 2rem; max-width: 1100px; width: 100%; margin: 0 auto; }
+  .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+  .q-text { font-size: 17px; font-weight: 500; line-height: 1.6; font-family: var(--font-head); margin-bottom: 1.25rem; }
+  .hint-box { background: var(--accent-bg); border: 1px solid var(--accent-border); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 1.25rem; }
+  .hint-toggle { font-size: 13px; color: var(--text2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1rem; }
+  .hint-toggle:hover { color: var(--accent2); }
+  .timer-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding: 12px 16px; background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .timer-num { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--amber); min-width: 52px; }
+  .sidebar-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+  .sidebar-title { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .tip-item { font-size: 13px; color: var(--text2); padding: 7px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+  .tip-item:last-child { border-bottom: none; }
+  .tip-item strong { color: var(--text); font-weight: 500; }
+  .char-count { font-size: 12px; color: var(--text3); text-align: right; margin-top: 6px; }
+
+  /* =====================
+     SCREEN 4: FEEDBACK
+  ===================== */
+  .feedback-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; flex: 1; padding: 2rem; max-width: 1100px; width: 100%; margin: 0 auto; }
+  .score-breakdown { display: flex; flex-direction: column; gap: 14px; }
+  .score-row { display: flex; align-items: center; gap: 12px; }
+  .score-row-label { font-size: 13px; color: var(--text2); min-width: 130px; }
+  .score-row-val { font-size: 13px; font-weight: 500; min-width: 36px; text-align: right; }
+  .answer-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem; }
+  .answer-box { background: var(--bg3); border-radius: var(--radius-sm); padding: 1rem; font-size: 13px; line-height: 1.7; }
+  .answer-box-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 8px; }
+  .keyword-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .kw { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+  .kw-hit { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+  .kw-miss { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.35s ease both; }
+  .fade-up-1 { animation-delay: 0.05s; }
+  .fade-up-2 { animation-delay: 0.1s; }
+  .fade-up-3 { animation-delay: 0.15s; }
+  .fade-up-4 { animation-delay: 0.2s; }
+
+  @media (max-width: 768px) {
+    .practice-layout, .feedback-layout { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .answer-compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SCREEN 1: LOGIN ==================== -->
+<div id="screen-login" class="screen active">
+  <div class="login-box fade-up">
+    <div class="login-logo">Prep<span>IQ</span></div>
+    <p class="text-sm text-muted mt-1">Sharpen your interview skills with AI feedback</p>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign in</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <div id="login-form">
+      <div id="login-error" class="error-msg">Invalid email or password. Try: demo@prepiq.com / demo123</div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" value="demo@prepiq.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" value="demo123">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="doLogin()">Sign in</button>
+      <div class="divider-or">or</div>
+      <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="goScreen('dashboard')">Continue as guest</button>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" placeholder="Mrunali Khairkar">
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="Min 8 characters">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="goScreen('dashboard')">Create account</button>
+    </div>
+
+    <p class="text-xs text-hint" style="text-align:center;margin-top:1.25rem">
+      Hint: use <span style="color:var(--text2)">demo@prepiq.com</span> / <span style="color:var(--text2)">demo123</span>
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 2: DASHBOARD ==================== -->
+<div id="screen-dashboard" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-user">
+      <span class="text-sm text-muted">Mrunali K.</span>
+      <div class="avatar">MK</div>
+      <button class="nav-btn ghost" onclick="goScreen('login')">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="flex items-center justify-between mb-4 fade-up">
+      <div>
+        <div class="page-title">Good morning, Mrunali</div>
+        <p class="text-sm text-muted">Ready for today's practice? You're on a 3-day streak.</p>
+      </div>
+      <button class="btn btn-primary" onclick="startPractice()">Start practice session</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid-4 fade-up fade-up-1" style="margin-bottom:1.5rem">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent2)">47</div>
+        <div class="stat-label">Questions attempted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--green)">72%</div>
+        <div class="stat-label">Average score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--amber)">3</div>
+        <div class="stat-label">Day streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--text)">12</div>
+        <div class="stat-label">Mock interviews</div>
+      </div>
+    </div>
+
+    <!-- Weak topics + question bank -->
+    <div class="grid-2 fade-up fade-up-2">
+      <!-- Weak topics -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="font-head font-500">Performance by topic</div>
+          <span class="badge badge-amber">2 weak areas</span>
+        </div>
+        <div class="score-breakdown">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm">Java Core</span>
+              <span class="text-sm font-500 text-green">84%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill green" style="width:84%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm">Spring Boot</span>
+              <span class="text-sm font-500 text-amber">61%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill amber" style="width:61%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm">Data Structures</span>
+              <span class="text-sm font-500 text-red">48%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill red" style="width:48%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm">System Design</span>
+              <span class="text-sm font-500" style="color:var(--text2)">78%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:78%"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm">HR / Behavioural</span>
+              <span class="text-sm font-500 text-green">91%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill green" style="width:91%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="font-head font-500 mb-4">Recent attempts</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="flex items-center justify-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div class="text-sm font-500">Explain OOP principles</div>
+              <div class="text-xs text-muted mt-1">Java Core · 2 hours ago</div>
+            </div>
+            <span class="badge badge-green">88</span>
+          </div>
+          <div class="flex items-center justify-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div class="text-sm font-500">What is a binary search tree?</div>
+              <div class="text-xs text-muted mt-1">DSA · Yesterday</div>
+            </div>
+            <span class="badge badge-amber">54</span>
+          </div>
+          <div class="flex items-center justify-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div class="text-sm font-500">How does Spring Boot auto-config work?</div>
+              <div class="text-xs text-muted mt-1">Spring Boot · Yesterday</div>
+            </div>
+            <span class="badge badge-red">42</span>
+          </div>
+          <div class="flex items-center justify-between" style="padding:10px 0">
+            <div>
+              <div class="text-sm font-500">Tell me about yourself</div>
+              <div class="text-xs text-muted mt-1">HR · 2 days ago</div>
+            </div>
+            <span class="badge badge-green">95</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question bank -->
+    <div class="mt-6 fade-up fade-up-3">
+      <div class="flex items-center justify-between mb-4">
+        <div class="font-head font-500">Question bank</div>
+        <input type="text" placeholder="Search questions..." style="width:220px">
+      </div>
+      <div class="category-filter">
+        <button class="filter-btn active" onclick="filterQ(this,'All')">All</button>
+        <button class="filter-btn" onclick="filterQ(this,'Java')">Java Core</button>
+        <button class="filter-btn" onclick="filterQ(this,'Spring')">Spring Boot</button>
+        <button class="filter-btn" onclick="filterQ(this,'DSA')">DSA</button>
+        <button class="filter-btn" onclick="filterQ(this,'System')">System Design</button>
+        <button class="filter-btn" onclick="filterQ(this,'HR')">HR</button>
+      </div>
+      <div id="q-grid" class="grid-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 3: PRACTICE ==================== -->
+<div id="screen-practice" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-links">
+      <button class="nav-btn ghost" onclick="goScreen('dashboard')">← Back to dashboard</button>
+    </div>
+  </nav>
+
+  <div class="practice-layout">
+    <!-- Main panel -->
+    <div class="flex-col">
+      <!-- Timer -->
+      <div class="timer-bar fade-up">
+        <div>
+          <div class="text-xs text-muted">Time elapsed</div>
+          <div class="timer-num" id="timer-display">00:00</div>
+        </div>
+        <div style="flex:1">
+          <div class="progress-track"><div class="progress-fill amber" id="timer-bar-fill" style="width:0%"></div></div>
+        </div>
+        <span class="badge badge-amber">5:00 limit</span>
+      </div>
+
+      <!-- Question -->
+      <div class="card fade-up fade-up-1" style="flex:1">
+        <div class="q-meta">
+          <span class="badge badge-purple" id="prac-category">Spring Boot</span>
+          <span class="badge badge-amber" id="prac-difficulty">Medium</span>
+          <span class="text-xs text-muted" style="margin-left:auto">Question 3 of 10</span>
+        </div>
+
+        <div class="q-text" id="prac-question">
+          How does Spring Boot's auto-configuration work? Explain the role of @SpringBootApplication and the conditions that trigger auto-config beans.
+        </div>
+
+        <div class="hint-toggle" onclick="toggleHint()">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Show hint
+        </div>
+        <div id="hint-box" class="hint-box" style="display:none">
+          Think about: <strong>@EnableAutoConfiguration</strong>, spring.factories / AutoConfiguration.imports, <strong>@ConditionalOnClass</strong>, <strong>@ConditionalOnMissingBean</strong>. The starter POMs bring classpath dependencies that trigger specific auto-config classes.
+        </div>
+
+        <label>Your answer</label>
+        <textarea id="answer-input" placeholder="Type your answer here. Be specific — mention class names, annotations, and examples where possible..." oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="char-count">0</span> / 1500 characters</div>
+
+        <div class="flex gap-3 mt-4">
+          <button class="btn btn-primary" onclick="submitAnswer()">Submit for AI feedback</button>
+          <button class="btn btn-outline" onclick="skipQuestion()">Skip question</button>
+          <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="goScreen('dashboard')">Exit session</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="fade-up fade-up-2">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Session progress</div>
+        <div class="flex gap-3 mb-3">
+          <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:10px;text-align:center">
+            <div class="font-head font-500" style="font-size:18px;color:var(--green)">2</div>
+            <div class="text-xs text-muted">Done</div>
+          </div>
+          <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:10px;text-align:center">
+            <div class="font-head font-500" style="font-size:18px;color:var(--amber)">7</div>
+            <div class="text-xs text-muted">Remaining</div>
+          </div>
+          <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:10px;text-align:center">
+            <div class="font-head font-500" style="font-size:18px;color:var(--text)">76</div>
+            <div class="text-xs text-muted">Avg score</div>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--green-bg);border:1px solid rgba(52,211,153,0.2);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--green)">1</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--green-bg);border:1px solid rgba(52,211,153,0.2);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--green)">2</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--accent-bg);border:2px solid var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--accent2)">3</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">4</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">5</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">6</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">7</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--amber-bg);border:1px solid rgba(251,191,36,0.2);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--amber)">S</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">9</span>
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3)">10</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Answer tips</div>
+        <div class="tip-item"><strong>Structure first.</strong> Start with a one-line definition, then expand.</div>
+        <div class="tip-item"><strong>Use terms.</strong> Mention specific annotations and class names.</div>
+        <div class="tip-item"><strong>Give an example.</strong> Even a brief code reference helps.</div>
+        <div class="tip-item"><strong>Aim for 150–400 words.</strong> Too short = low score.</div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Related topics</div>
+        <div class="flex gap-2 flex-wrap">
+          <span class="badge badge-gray">@Conditional</span>
+          <span class="badge badge-gray">Spring starters</span>
+          <span class="badge badge-gray">spring.factories</span>
+          <span class="badge badge-gray">Bean lifecycle</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 4: FEEDBACK ==================== -->
+<div id="screen-feedback" class="screen">
+  <nav>
+    <div class="nav-logo">Prep<span>IQ</span></div>
+    <div class="nav-links">
+      <button class="nav-btn ghost" onclick="nextQuestion()">Next question →</button>
+      <button class="nav-btn ghost" onclick="goScreen('dashboard')">Dashboard</button>
+    </div>
+  </nav>
+
+  <div class="feedback-layout">
+    <!-- Main -->
+    <div>
+      <!-- Score header -->
+      <div class="card flex gap-4 items-center fade-up mb-4">
+        <div class="score-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#7c6fef" stroke-width="8"
+              stroke-dasharray="201" stroke-dashoffset="54" stroke-linecap="round" id="score-circle"/>
+          </svg>
+          <div class="score-num">73<div class="score-lbl">/100</div></div>
+        </div>
+        <div style="flex:1">
+          <div class="font-head font-500" style="font-size:18px">Good attempt!</div>
+          <p class="text-sm text-muted mt-1">You covered the main concepts but missed some key technical terms that interviewers look for.</p>
+          <div class="flex gap-2 mt-3">
+            <span class="badge badge-green">Decent structure</span>
+            <span class="badge badge-amber">Missing keywords</span>
+            <span class="badge badge-amber">Needs examples</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score breakdown -->
+      <div class="card fade-up fade-up-1 mb-4">
+        <div class="font-head font-500 mb-4">Score breakdown</div>
+        <div class="score-breakdown">
+          <div class="score-row">
+            <span class="score-row-label text-sm">Keyword coverage</span>
+            <div class="progress-track" style="flex:1"><div class="progress-fill amber" style="width:65%"></div></div>
+            <span class="score-row-val text-sm text-amber">65</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label text-sm">Confidence tone</span>
+            <div class="progress-track" style="flex:1"><div class="progress-fill green" style="width:82%"></div></div>
+            <span class="score-row-val text-sm text-green">82</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label text-sm">Answer length</span>
+            <div class="progress-track" style="flex:1"><div class="progress-fill green" style="width:80%"></div></div>
+            <span class="score-row-val text-sm text-green">80</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label text-sm">Technical depth</span>
+            <div class="progress-track" style="flex:1"><div class="progress-fill red" style="width:55%"></div></div>
+            <span class="score-row-val text-sm text-red">55</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keywords -->
+      <div class="card fade-up fade-up-2 mb-4">
+        <div class="font-head font-500 mb-2">Keyword analysis</div>
+        <p class="text-sm text-muted mb-3">Keywords your answer included vs. what was expected:</p>
+        <div class="keyword-grid">
+          <span class="kw kw-hit">@SpringBootApplication</span>
+          <span class="kw kw-hit">auto-configuration</span>
+          <span class="kw kw-miss">@ConditionalOnClass</span>
+          <span class="kw kw-miss">spring.factories</span>
+          <span class="kw kw-hit">@EnableAutoConfiguration</span>
+          <span class="kw kw-miss">@ConditionalOnMissingBean</span>
+          <span class="kw kw-hit">classpath</span>
+          <span class="kw kw-miss">AutoConfiguration.imports</span>
+          <span class="kw kw-hit">starter</span>
+          <span class="kw kw-miss">@Conditional</span>
+        </div>
+        <div class="flex gap-4 mt-3">
+          <div class="text-xs text-muted"><span class="kw kw-hit" style="padding:2px 8px">Hit</span> 5 found in your answer</div>
+          <div class="text-xs text-muted"><span class="kw kw-miss" style="padding:2px 8px">Miss</span> 5 missing</div>
+        </div>
+      </div>
+
+      <!-- Answer comparison -->
+      <div class="card fade-up fade-up-3">
+        <div class="font-head font-500 mb-2">Answer comparison</div>
+        <div class="answer-compare">
+          <div class="answer-box">
+            <div class="answer-box-label">Your answer</div>
+            <span id="user-answer-display" class="text-sm" style="color:var(--text2)">Spring Boot auto-configuration works by scanning the classpath and applying configuration based on what dependencies are present. The @SpringBootApplication annotation enables this. It uses @EnableAutoConfiguration which reads configuration files to find which beans to create automatically...</span>
+          </div>
+          <div class="answer-box" style="border:1px solid rgba(52,211,153,0.15)">
+            <div class="answer-box-label" style="color:var(--green)">Model answer</div>
+            <span class="text-sm" style="color:var(--text2)">Spring Boot auto-configuration uses <strong style="color:var(--text)">@EnableAutoConfiguration</strong> (part of @SpringBootApplication) to load classes listed in <strong style="color:var(--text)">spring.factories</strong> or <strong style="color:var(--text)">AutoConfiguration.imports</strong>. Each auto-config class uses conditions like <strong style="color:var(--text)">@ConditionalOnClass</strong> and <strong style="color:var(--text)">@ConditionalOnMissingBean</strong> to only activate when relevant dependencies are on the classpath and no user-defined bean overrides it...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="fade-up fade-up-1">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Suggestions</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm)">
+            <div class="text-xs text-amber mb-1">Add this</div>
+            <div class="text-sm">Mention <code style="background:var(--bg);padding:1px 5px;border-radius:4px;font-size:11px">@ConditionalOnClass</code> and how it checks classpath before creating beans.</div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm)">
+            <div class="text-xs text-amber mb-1">Add this</div>
+            <div class="text-sm">Reference <code style="background:var(--bg);padding:1px 5px;border-radius:4px;font-size:11px">spring.factories</code> or <code style="background:var(--bg);padding:1px 5px;border-radius:4px;font-size:11px">AutoConfiguration.imports</code> — the file where auto-configs are registered.</div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm)">
+            <div class="text-xs text-green mb-1">Good</div>
+            <div class="text-sm">Confident tone throughout. Good answer length and clear structure.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card mt-3">
+        <div class="sidebar-title">Resources to study</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="text-sm text-muted" style="padding:8px 0;border-bottom:1px solid var(--border)">Spring Boot autoconfigure source on GitHub</div>
+          <div class="text-sm text-muted" style="padding:8px 0;border-bottom:1px solid var(--border)">Baeldung: Spring Boot auto-configuration</div>
+          <div class="text-sm text-muted" style="padding:8px 0">Official Spring docs: @Conditional</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" style="justify-content:center" onclick="nextQuestion()">Next question →</button>
+        <button class="btn btn-outline" style="justify-content:center" onclick="retryQuestion()">Retry this question</button>
+        <button class="btn btn-ghost btn-sm" style="justify-content:center" onclick="goScreen('dashboard')">Back to dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- DATA ---
+  const questions = [
+    { id:1, category:'Java', difficulty:'Easy',   text:'What is the difference between == and .equals() in Java? When would you use each?' },
+    { id:2, category:'Java', difficulty:'Medium', text:'Explain the Java memory model: stack vs heap. How are objects and primitives stored?' },
+    { id:3, category:'Java', difficulty:'Hard',   text:'What are the SOLID principles? Give a Java example for each.' },
+    { id:4, category:'Spring', difficulty:'Medium', text:'How does Spring Boot auto-configuration work? Explain @SpringBootApplication and conditional beans.' },
+    { id:5, category:'Spring', difficulty:'Hard',   text:'What is the difference between @Component, @Service, @Repository, and @Controller in Spring?' },
+    { id:6, category:'Spring', difficulty:'Easy',   text:'What is dependency injection? How does Spring implement it?' },
+    { id:7, category:'DSA', difficulty:'Medium', text:'Explain how a HashMap works internally in Java. What happens during a hash collision?' },
+    { id:8, category:'DSA', difficulty:'Hard',   text:'What is the time complexity of quicksort in best, average, and worst case? Explain why.' },
+    { id:9, category:'DSA', difficulty:'Easy',   text:'What is a linked list? Compare it with an ArrayList. When would you choose each?' },
+    { id:10, category:'System', difficulty:'Hard',   text:'How would you design a URL shortener like bit.ly? Walk through the architecture.' },
+    { id:11, category:'System', difficulty:'Medium', text:'What is a REST API? What makes an API truly RESTful? Discuss constraints.' },
+    { id:12, category:'HR', difficulty:'Easy',   text:'Tell me about yourself and why you are interested in software development.' },
+    { id:13, category:'HR', difficulty:'Easy',   text:'Describe a challenging project you worked on. What was your approach and what did you learn?' },
+    { id:14, category:'HR', difficulty:'Medium', text:'Where do you see yourself in 5 years? How does this role fit your career goals?' },
+  ];
+
+  const diffBadge = { Easy:'badge-green', Medium:'badge-amber', Hard:'badge-red' };
+  let activeFilter = 'All';
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let currentQuestion = questions[3];
+  let hintVisible = false;
+
+  // --- NAVIGATION ---
+  function goScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    window.scrollTo(0,0);
+    if (name === 'practice') startTimer();
+    else stopTimer();
+  }
+
+  // --- LOGIN ---
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0 && tab==='login')||(i===1 && tab==='register')));
+    document.getElementById('login-form').style.display = tab==='login' ? 'block' : 'none';
+    document.getElementById('register-form').style.display = tab==='register' ? 'block' : 'none';
+    document.getElementById('login-error').style.display = 'none';
+  }
+
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    if (email === 'demo@prepiq.com' && pass === 'demo123') {
+      goScreen('dashboard');
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  // --- DASHBOARD ---
+  function filterQ(btn, cat) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderQuestions();
+  }
+
+  function renderQuestions() {
+    const grid = document.getElementById('q-grid');
+    const filtered = activeFilter === 'All' ? questions : questions.filter(q => q.category === activeFilter.replace(' Core','').replace(' Boot','').replace(' Design',''));
+    grid.innerHTML = filtered.map(q => `
+      <div class="q-card" onclick="openQuestion(${q.id})">
+        <div class="q-card-title">${q.text}</div>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-2">
+            <span class="badge badge-purple">${q.category}</span>
+            <span class="badge ${diffBadge[q.difficulty]}">${q.difficulty}</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--text3)">
+            <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>`).join('');
+  }
+
+  function openQuestion(id) {
+    currentQuestion = questions.find(q => q.id === id);
+    document.getElementById('prac-question').textContent = currentQuestion.text;
+    document.getElementById('prac-category').textContent = currentQuestion.category;
+    document.getElementById('prac-difficulty').textContent = currentQuestion.difficulty;
+    document.getElementById('prac-difficulty').className = 'badge ' + diffBadge[currentQuestion.difficulty];
+    document.getElementById('answer-input').value = '';
+    document.getElementById('char-count').textContent = '0';
+    hintVisible = false;
+    document.getElementById('hint-box').style.display = 'none';
+    timerSeconds = 0;
+    goScreen('practice');
+  }
+
+  function startPractice() {
+    openQuestion(questions[Math.floor(Math.random()*questions.length)].id);
+  }
+
+  // --- TIMER ---
+  function startTimer() {
+    stopTimer();
+    timerSeconds = 0;
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+      const s = String(timerSeconds%60).padStart(2,'0');
+      document.getElementById('timer-display').textContent = `${m}:${s}`;
+      const pct = Math.min((timerSeconds / 300) * 100, 100);
+      document.getElementById('timer-bar-fill').style.width = pct + '%';
+      const fill = document.getElementById('timer-bar-fill');
+      if (pct > 80) fill.style.background = 'var(--red)';
+      else if (pct > 50) fill.style.background = 'var(--amber)';
+      else fill.style.background = 'var(--amber)';
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  // --- PRACTICE ---
+  function toggleHint() {
+    hintVisible = !hintVisible;
+    document.getElementById('hint-box').style.display = hintVisible ? 'block' : 'none';
+    document.querySelector('.hint-toggle').innerHTML = hintVisible
+      ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Hide hint'
+      : '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Show hint';
+  }
+
+  function updateCharCount() {
+    const len = document.getElementById('answer-input').value.length;
+    document.getElementById('char-count').textContent = len;
+    document.getElementById('char-count').style.color = len > 1200 ? 'var(--amber)' : 'var(--text3)';
+  }
+
+  function submitAnswer() {
+    const ans = document.getElementById('answer-input').value.trim();
+    if (ans.length < 20) {
+      alert('Please write at least a few sentences before submitting.');
+      return;
+    }
+    document.getElementById('user-answer-display').textContent = ans.substring(0, 280) + (ans.length > 280 ? '...' : '');
+    stopTimer();
+    goScreen('feedback');
+  }
+
+  function skipQuestion() {
+    goScreen('dashboard');
+  }
+
+  // --- FEEDBACK ---
+  function nextQuestion() {
+    const idx = questions.findIndex(q => q.id === currentQuestion.id);
+    const next = questions[(idx + 1) % questions.length];
+    openQuestion(next.id);
+  }
+
+  function retryQuestion() {
+    document.getElementById('answer-input').value = '';
+    document.getElementById('char-count').textContent = '0';
+    timerSeconds = 0;
+    goScreen('practice');
+  }
+
+  // --- INIT ---
+  renderQuestions();
+</script>
+</body>
+</html>
